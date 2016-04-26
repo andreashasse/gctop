@@ -1,0 +1,15 @@
+{application, gctop,
+ [{description, "List processes that spends most time doing gc in your VM"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {maintainers, []},
+  {licenses, []},
+  {links, []}
+ ]}.
