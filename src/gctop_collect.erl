@@ -19,10 +19,24 @@ loop(Tab, Info) ->
                 stop ->
                     mk_table(Tab, Info),
                     ok;
-                {trace_ts, Pid, gc_start, _Stats, TimeStamp} ->
+                {trace_ts, Pid, gc_minor_start, _Stats, TimeStamp} ->
+                    ets:insert(Tab, {{Pid, gc_minor}, TimeStamp}),
+                    loop(Tab, Info);
+                {trace_ts, Pid, gc_minor_end, _Stats, TimeStamp} ->
+                    StartKey = {Pid, gc_minor},
+                    case ets:lookup(Tab, StartKey) of
+                        [] ->
+                            loop(Tab, Info);
+                        [{_Key, StartTimestamp}] ->
+                            ets:delete(Tab, StartKey),
+                            TimeDiff = microsec_diff(TimeStamp, StartTimestamp),
+                            update_counter(Tab, {Pid, tot_gc}, TimeDiff),
+                            loop(Tab, Info)
+                    end;
+                {trace_ts, Pid, gc_major_start, _Stats, TimeStamp} ->
                     ets:insert(Tab, {{Pid, gc}, TimeStamp}),
                     loop(Tab, Info);
-                {trace_ts, Pid, gc_end, _Stats, TimeStamp} ->
+                {trace_ts, Pid, gc_major_end, _Stats, TimeStamp} ->
                     StartKey = {Pid, gc},
                     case ets:lookup(Tab, StartKey) of
                         [] ->
