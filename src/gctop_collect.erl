@@ -90,7 +90,7 @@ pid_to_name(Pid) ->
         _ ->
             case erlang:process_info(Pid, initial_call) of
                 {initial_call, {M,F,A}} ->
-                    io_lib:format("~s:~s/~p", [M,F,A]);
+                    io_lib:format("~s:~s/~p (~s)", [M,F,A, pid_to_list(Pid)]);
                 _ ->
                     pid_to_list(Pid)
             end
