@@ -67,7 +67,7 @@ mk_table(Tab, Info) ->
 
 to_table(FixedData, _Info) ->
     io:format(?FMT, [name, time]),
-    io:format("~80.80c", [$-]),
+    io:format("~80.80c~n", [$-]),
     lists:map(
       fun({Name, GcTime}) -> io:format(?FMT, [Name, GcTime]) end,
       FixedData).
@@ -88,8 +88,8 @@ pid_to_name(Pid) ->
     case erlang:process_info(Pid, registered_name) of
         {registered_name, Name} -> Name;
         _ ->
-            case erlang:process_info(Pid, current_function) of
-                {current_function, {M,F,A}} ->
+            case erlang:process_info(Pid, initial_call) of
+                {initial_call, {M,F,A}} ->
                     io_lib:format("~s:~s/~p", [M,F,A]);
                 _ ->
                     pid_to_list(Pid)
